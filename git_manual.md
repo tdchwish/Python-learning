@@ -81,3 +81,94 @@
 - **本地没有仓库，直接 `git clone` 远程仓库即可。**
 - **本地有代码但没仓库，先 `git init`，再关联远程仓库并推送。**
 
+
+
+# ssh 配置
+
+我来帮您配置 Git 使用 SSH。以下是完整的步骤：
+
+## 1. 生成 SSH 密钥
+
+首先检查是否已有 SSH 密钥：
+```bash
+ls -la ~/.ssh
+```
+
+如果没有密钥，生成新的：
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+# 如果系统不支持 Ed25519，使用 RSA：
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+
+按提示操作，可以直接按回车使用默认路径，设置密码短语（可选）。
+
+## 2. 添加 SSH 密钥到 ssh-agent
+
+启动 ssh-agent：
+```bash
+eval "$(ssh-agent -s)"
+```
+
+添加密钥：
+```bash
+ssh-add ~/.ssh/id_ed25519
+# 或者对于 RSA：
+ssh-add ~/.ssh/id_rsa
+```
+
+## 3. 添加公钥到 Git 托管平台
+
+复制公钥内容：
+```bash
+cat ~/.ssh/id_ed25519.pub
+# 或者
+cat ~/.ssh/id_rsa.pub
+```
+
+然后将公钥添加到：
+- **GitHub**: Settings → SSH and GPG keys → New SSH key
+- **GitLab**: Settings → SSH Keys
+- **Gitee**: 设置 → SSH公钥
+
+## 4. 测试连接
+
+```bash
+# GitHub
+ssh -T git@github.com
+
+# GitLab
+ssh -T git@gitlab.com
+
+# Gitee
+ssh -T git@gitee.com
+```
+
+## 5. 配置 Git 使用 SSH
+
+克隆仓库时使用 SSH URL：
+```bash
+git clone git@github.com:username/repository.git
+```
+
+如果已有仓库要改为 SSH：
+```bash
+git remote set-url origin git@github.com:username/repository.git
+```
+
+## 6. 配置多个 SSH 密钥（可选）
+
+如果需要为不同平台使用不同密钥，创建 `~/.ssh/config` 文件：
+```
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_gitlab
+```
+
+需要我详细解释某个步骤吗？
